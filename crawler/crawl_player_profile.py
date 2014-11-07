@@ -4,7 +4,6 @@
 from __future__ import division
 
 import sys
-
 import json
 import requests
 from time import sleep
@@ -37,7 +36,7 @@ class UserCrawler():
                 if 'start_at_match_id' in self.history_params and \
                    self.history_params['start_at_match_id'] == match['match_id']:
                     continue
-                print >> sys.stderr, current_match
+                #print >> sys.stderr, current_match
                 current_match +=1
                 # get match details
                 self.details_params['match_id'] = match['match_id']
@@ -47,11 +46,15 @@ class UserCrawler():
                 #sleep(1)
 
                 # save relevant match details
-                relev_details = {}
                 radiant_win = match_details['result']['radiant_win']
                 for player in match_details['result']['players']:
-                    if player['account_id'] == user_id + 76561197960265728:
+                    if player['account_id'] == user_id:
+                        if player['leaver_status'] != 0:
+                            break
+
                         hero_id = player['hero_id']
+                        if hero_id == 0:
+                            print >> sys.stderr, player
 
                         # initialize if necessary
                         if hero_id not in player_profile:
@@ -71,20 +74,25 @@ class UserCrawler():
                         player_profile[hero_id]['deaths'] += player['deaths']
                         player_profile[hero_id]['assists'] += player['assists']
 
-            print >> sys.stderr, match_history['result']['results_remaining']
+            #print >> sys.stderr, match_history['result']['results_remaining']
             if(match_history['result']['results_remaining'] == 0):
                 break
 
         # average all hero stats
-        for hero in player_profile:
-            hero['win_perc'] /= hero['matches']
-            hero['kills'] /= hero['matches']
-            hero['deaths'] /= hero['matches']
-            hero['assists'] /= hero['matches']
+        for hero_id, stats in player_profile.iteritems():
+            stats['win_perc'] /= stats['matches']
+            if stats['deaths'] != 0:
+                stats['kda_ratio'] = (stats['kills'] + stats['assists']) / stats['deaths']
+            else:
+                stats['kda_ratio'] = (stats['kills'] + stats['assists'])
+            stats.pop('kills', None)
+            stats.pop('deaths', None)
+            stats.pop('assists', None)
 
         return player_profile
 
 if __name__ == '__main__':
-    # 183104694 = user CADILLACLACLACLACO (Alan)
+    # 183104694 = user CADILLACLACLACLAC (Alan)
     crawler = UserCrawler()
-    print crawler.getPlayerProfile(183104694)
+    player_profile = crawler.getPlayerProfile(183104694)
+    print json.dumps(player_profile, sort_keys=True, indent=4, separators=(',', ': '))
