@@ -41,6 +41,11 @@ class UserCrawler():
                 # get match details
                 self.details_params['match_id'] = match['match_id']
                 self.history_params['start_at_match_id'] = match['match_id']
+
+                # user's profile is private
+                if match_history['status'] == 15:
+                    return players
+                    
                 details_resp = requests.get(url=self.details_url, params=self.details_params)
                 match_details = json.loads(details_resp.text)
                 #sleep(1)
