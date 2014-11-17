@@ -1,15 +1,18 @@
+#!/usr/bin/python
+
 """ Create a player profile for every
     given user ID in the input file.
 """
 
 from __future__ import division
+import sys
 import json
 import requests
 from mrjob.job import MRJob
 from math import sqrt
 
 
-STEAM_KEY = 'CCAFC265C13500E30C9E8BC6E04EEE9C'
+STEAM_KEY = '495726C265823513DE44E1A10C1D061E'
 
 def success_rating(won, lost):
 # a success rating that considers win/loss ratio along with # of games return
@@ -31,6 +34,7 @@ class ProfileCreator(MRJob):
         while(True):
             # get the next 100 matches
             resp = requests.get(url=history_url, params=history_params)
+            print >> sys.stderr, resp.text
             match_history = json.loads(resp.text)
 
             # user's profile is private
