@@ -44,9 +44,10 @@ class ProfileCreator(MRJob):
                 except ValueError:
                     print >> sys.stderr, "Caught match history ValueError - invalid JSON:"
                     print >> sys.stderr, resp.text
+                    resp = requests.get(url=history_url, params=history_params)
                     count += 1
-                    #if(count > 15):
-                        #raise Exception("More than 15 retries - aborting.")
+                    if(count > 15):
+                        raise Exception("More than 15 retries - aborting.")
 
             # user's profile is private
             if match_history['result']['status'] == 15:
@@ -83,10 +84,11 @@ class ProfileCreator(MRJob):
                 break
             except ValueError:
                 print >> sys.stderr, "Caught match details ValueError - invalid JSON:"
-                print >> sys.stderr, resp.text
+                print >> sys.stderr, details_resp.text
+                details_resp = requests.get(url=details_url, params=details_params)
                 count += 1
-                #if(count > 15):
-                    #raise Exception("More than 15 retries - aborting.")
+                if(count > 15):
+                    raise Exception("More than 15 retries - aborting.")
 
         heroes = {}
 
