@@ -34,8 +34,15 @@ class ProfileCreator(MRJob):
         while(True):
             # get the next 100 matches
             resp = requests.get(url=history_url, params=history_params)
-            print >> sys.stderr, resp.text
-            match_history = json.loads(resp.text)
+            match_history = {}
+
+            while(True):
+                try:
+                    match_history = json.loads(resp.text)
+                    break
+                except ValueError:
+                    print >> sys.stderr, "Caught match history ValueError - invalid JSON:"
+                    print >> sys.stderr, resp.text
 
             # user's profile is private
             if match_history['result']['status'] == 15:
@@ -63,7 +70,15 @@ class ProfileCreator(MRJob):
         details_params = dict(key=STEAM_KEY, account_id=int(user_id)+76561197960265728, match_id=match_id)
 
         details_resp = requests.get(url=details_url, params=details_params)
-        match_details = json.loads(details_resp.text)
+        match_details = {}
+
+        while(True):
+            try:
+                match_details = json.loads(details_resp.text)
+                break
+            except ValueError:
+                print >> sys.stderr, "Caught match details ValueError - invalid JSON:"
+                print >> sys.stderr, resp.text
 
         heroes = {}
 
