@@ -12,7 +12,7 @@ from mrjob.job import MRJob
 from math import sqrt
 
 
-STEAM_KEY = '495726C265823513DE44E1A10C1D061E'
+STEAM_KEY = '54821F4A31BFCDA4D1D9339B91378FD1'
 
 def success_rating(won, lost):
 # a success rating that considers win/loss ratio along with # of games return
@@ -35,6 +35,7 @@ class ProfileCreator(MRJob):
             # get the next 100 matches
             resp = requests.get(url=history_url, params=history_params)
             match_history = {}
+            count = 0
 
             while(True):
                 try:
@@ -43,6 +44,9 @@ class ProfileCreator(MRJob):
                 except ValueError:
                     print >> sys.stderr, "Caught match history ValueError - invalid JSON:"
                     print >> sys.stderr, resp.text
+                    count += 1
+                    #if(count > 15):
+                        #raise Exception("More than 15 retries - aborting.")
 
             # user's profile is private
             if match_history['result']['status'] == 15:
@@ -71,6 +75,7 @@ class ProfileCreator(MRJob):
 
         details_resp = requests.get(url=details_url, params=details_params)
         match_details = {}
+        count = 0
 
         while(True):
             try:
@@ -79,6 +84,9 @@ class ProfileCreator(MRJob):
             except ValueError:
                 print >> sys.stderr, "Caught match details ValueError - invalid JSON:"
                 print >> sys.stderr, resp.text
+                count += 1
+                #if(count > 15):
+                    #raise Exception("More than 15 retries - aborting.")
 
         heroes = {}
 
