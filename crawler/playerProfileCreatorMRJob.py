@@ -11,9 +11,9 @@ import requests
 from mrjob.job import MRJob
 from math import sqrt
 from time import sleep
+from random import randint
 
-
-STEAM_KEY = '70E60BD29BA287460C4DA514D264E384'
+STEAM_KEYS = []
 
 def success_rating(won, lost):
 # a success rating that considers win/loss ratio along with # of games return
@@ -22,12 +22,16 @@ def success_rating(won, lost):
             - 1.96 * sqrt(((won * lost) / (won + lost)) + 0.9604) \
             / (won + lost)) / (1 + 3.8416 / (won + lost)))*100
 
+def get_key():
+    return STEAM_KEYS[randint(0, len(STEAM_KEYS)-1)]
+
+
 class ProfileCreator(MRJob):
 
     def mapper_get_matches(self, _, user_id):
     # for each user, yeild all matches: (user_id, match_id)
         history_url = 'https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/V001/'
-        history_params = dict(key=STEAM_KEY, min_players=10, account_id=int(user_id)+76561197960265728)
+        history_params = dict(key=get_key(), min_players=10, account_id=int(user_id)+76561197960265728)
 
         current_match = 1
         last_match_id = 0
@@ -42,15 +46,18 @@ class ProfileCreator(MRJob):
                 try:
                     match_history = json.loads(resp.text)
                     if(len(match_history) == 0):
+                        history_params['key'] = get_key()
+                        details_resp = requests.get(url=details_url, params=details_params)
                         continue
                     break
                 except ValueError:
                     print >> sys.stderr, "Caught match history ValueError - invalid JSON:"
                     print >> sys.stderr, resp.text
+                    history_params['key'] = get_key()
                     resp = requests.get(url=history_url, params=history_params)
                     bad_count += 1
                     # lots of errors returned, so wait 10 seconds
-                    if(bad_count > 15):
+                    if(bad_count > 5):
                         sleep(10)
                         bad_count = 0
 
@@ -77,7 +84,7 @@ class ProfileCreator(MRJob):
     # for each match, yeild hero details:
     # (user_id, {"hero_name:" {"matches": ,"won": , "kills":, "deaths": , "assists": }})
         details_url = 'https://api.steampowered.com/IDOTA2Match_570/GetMatchDetails/V001/'
-        details_params = dict(key=STEAM_KEY, account_id=int(user_id)+76561197960265728, match_id=match_id)
+        details_params = dict(key=get_key(), account_id=int(user_id)+76561197960265728, match_id=match_id)
 
         details_resp = requests.get(url=details_url, params=details_params)
         match_details = {}
@@ -87,15 +94,18 @@ class ProfileCreator(MRJob):
             try:
                 match_details = json.loads(details_resp.text)
                 if(len(match_details) == 0):
+                    details_params['key'] = get_key()
+                    details_resp = requests.get(url=details_url, params=details_params)
                     continue
                 break
             except ValueError:
                 print >> sys.stderr, "Caught match details ValueError - invalid JSON:"
                 print >> sys.stderr, details_resp.text
+                details_params['key'] = get_key()
                 details_resp = requests.get(url=details_url, params=details_params)
                 bad_count += 1
                 # lots of errors returned, so wait 10 seconds
-                if(bad_count > 15):
+                if(bad_count > 5):
                     sleep(10)
                     bad_count = 0
 
