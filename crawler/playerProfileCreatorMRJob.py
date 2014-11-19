@@ -10,9 +10,10 @@ import json
 import requests
 from mrjob.job import MRJob
 from math import sqrt
+from time import sleep
 
 
-STEAM_KEY = '54821F4A31BFCDA4D1D9339B91378FD1'
+STEAM_KEY = '70E60BD29BA287460C4DA514D264E384'
 
 def success_rating(won, lost):
 # a success rating that considers win/loss ratio along with # of games return
@@ -35,19 +36,23 @@ class ProfileCreator(MRJob):
             # get the next 100 matches
             resp = requests.get(url=history_url, params=history_params)
             match_history = {}
-            count = 0
+            bad_count = 0
 
             while(True):
                 try:
                     match_history = json.loads(resp.text)
+                    if(len(match_history) == 0):
+                        continue
                     break
                 except ValueError:
                     print >> sys.stderr, "Caught match history ValueError - invalid JSON:"
                     print >> sys.stderr, resp.text
                     resp = requests.get(url=history_url, params=history_params)
-                    count += 1
-                    if(count > 15):
-                        raise Exception("More than 15 retries - aborting.")
+                    bad_count += 1
+                    # lots of errors returned, so wait 10 seconds
+                    if(bad_count > 15):
+                        sleep(10)
+                        bad_count = 0
 
             # user's profile is private
             if match_history['result']['status'] == 15:
@@ -76,19 +81,23 @@ class ProfileCreator(MRJob):
 
         details_resp = requests.get(url=details_url, params=details_params)
         match_details = {}
-        count = 0
+        bad_count = 0
 
         while(True):
             try:
                 match_details = json.loads(details_resp.text)
+                if(len(match_details) == 0):
+                    continue
                 break
             except ValueError:
                 print >> sys.stderr, "Caught match details ValueError - invalid JSON:"
                 print >> sys.stderr, details_resp.text
                 details_resp = requests.get(url=details_url, params=details_params)
-                count += 1
-                if(count > 15):
-                    raise Exception("More than 15 retries - aborting.")
+                bad_count += 1
+                # lots of errors returned, so wait 10 seconds
+                if(bad_count > 15):
+                    sleep(10)
+                    bad_count = 0
 
         heroes = {}
 
