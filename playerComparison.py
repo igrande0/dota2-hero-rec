@@ -51,6 +51,8 @@ class PlayerComparison():
 
         for user_id, hero_profile in player_profiles.iteritems():
             for hero, stats in hero_profile.iteritems():
+                if stats['matches'] < 2:
+                    break
                 agg_player[hero] = agg_player.get(hero, {})
                 agg_player[hero]['kda'] = stats['kda']
                 agg_player[hero]['success'] = stats['success']
@@ -99,7 +101,7 @@ if __name__ == '__main__':
     comparer = PlayerComparison()
     scores = comparer.cosine(userProfile, playerProfiles)
     # neighbors is a list of user_ids
-    neighbors = comparer.getNearestNeighbors(scores, 3)
+    neighbors = comparer.getNearestNeighbors(scores, 100)
 
     # get hero profiles for nearest neighbors
     for neighbor in neighbors:
