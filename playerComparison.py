@@ -2,6 +2,7 @@
 from __future__ import division
 import json #or cjson
 import re
+import time
 from math import sqrt
 
 class PlayerComparison():
@@ -80,6 +81,7 @@ class PlayerComparison():
     	return unplayed_heroes
 
 if __name__ == '__main__':
+    startTime = time.time()
     userProfile = {}
     playerProfiles = {}
     heroesDict = {}
@@ -101,7 +103,7 @@ if __name__ == '__main__':
     comparer = PlayerComparison()
     scores = comparer.cosine(userProfile, playerProfiles)
     # neighbors is a list of user_ids
-    neighbors = comparer.getNearestNeighbors(scores, 100)
+    neighbors = comparer.getNearestNeighbors(scores, 500)
 
     # get hero profiles for nearest neighbors
     for neighbor in neighbors:
@@ -112,10 +114,21 @@ if __name__ == '__main__':
     unplayed_heroes = comparer.returnUnplayedHeroes(userProfile, agg_player)
 
     # print top unplayed heroes
+    output = []
     unplayed_heroes.sort(reverse = True)
-    print "\n\n=======================TOP 5 UNPLAYED HEROES======================="
+    #print "\n\n=======================TOP 5 UNPLAYED HEROES======================="
     for item in unplayed_heroes[:5]:
         for hero_id, stats in item[1].iteritems():
-            print heroesDict[int(hero_id)]
-            print "Predicted win percentage: " + str(int(round(stats['win_perc'] * 100, 0))) + '%'
-            print "Predicted Kill/Death/Assist ratio: " + str(round(stats['kda'], 2)) + '\n'
+            dictionary = dict()
+            dictionary['hero_name'] = heroesDict[int(hero_id)]
+            dictionary['hero_id'] = hero_id
+            dictionary['win_perc'] = int(round(stats['win_perc'] * 100, 0))
+            dictionary['kda'] = round(stats['kda'], 2)
+            output.append(dictionary)
+            #print dictionary['hero_name']
+            #print "Predicted win percentage: " + str(dictionary['win_perc']) + '%'
+            #print "Predicted Kill/Death/Assist ratio: " + str(dictionary['kda']) + '\n'
+    
+    print json.dumps(output, separators=(',',':'))
+
+    #print("execution time: %f seconds" % (time.time()-startTime))
