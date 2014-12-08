@@ -90,7 +90,11 @@ if __name__ == '__main__':
     for line in open('iggyzizzleProfile.json'):
         profile = re.split(r'\t+', line)
         userProfile = json.loads(profile[1])
-    for line in open('crawler/playerProfiles.json'):
+    for line in open('crawler/playerProfiles1.json'):
+        profile = re.split(r'\t+', line)
+        profile[0] = profile[0].strip('"')
+        playerProfiles[profile[0]] = json.loads(profile[1])
+    for line in open('crawler/playerProfiles2.json'):
         profile = re.split(r'\t+', line)
         profile[0] = profile[0].strip('"')
         playerProfiles[profile[0]] = json.loads(profile[1])
