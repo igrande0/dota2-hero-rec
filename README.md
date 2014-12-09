@@ -1,4 +1,4 @@
-D2REC README
+D2REC - Dota 2 Hero Recommender
 ==============
 
 
