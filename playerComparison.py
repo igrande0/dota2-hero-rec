@@ -85,6 +85,7 @@ if __name__ == '__main__':
     userProfile = {}
     playerProfiles = {}
     heroesDict = {}
+    heroesFormattedDict = {}
     nearestPlayerProfiles = {}
 
     for line in open('iggyzizzleProfile.json'):
@@ -103,6 +104,7 @@ if __name__ == '__main__':
     heroes_list = json.load(hero_file)
     for item in heroes_list['heroes']:
         heroesDict[item['id']] = item['localized_name']
+        heroesFormattedDict[item['id']] = re.sub('npc_dota_hero_', '', item['name'])
 
     comparer = PlayerComparison()
     scores = comparer.cosine(userProfile, playerProfiles)
@@ -124,6 +126,7 @@ if __name__ == '__main__':
     for item in unplayed_heroes[:5]:
         for hero_id, stats in item[1].iteritems():
             dictionary = dict()
+            dictionary['formatted_name'] = heroesFormattedDict[int(hero_id)]
             dictionary['hero_name'] = heroesDict[int(hero_id)]
             dictionary['hero_id'] = hero_id
             dictionary['win_perc'] = int(round(stats['win_perc'] * 100, 0))
