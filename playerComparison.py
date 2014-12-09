@@ -44,7 +44,6 @@ class PlayerComparison():
                 score_list.append((score, user_id))
 
         score_list.sort(reverse=True)
-        print score_list[:k]
 
         return [item[1] for item in score_list[:k]]
 
@@ -111,7 +110,7 @@ if __name__ == '__main__':
     comparer = PlayerComparison()
     scores = comparer.cosine(userProfile, playerProfiles)
     # neighbors is a list of user_ids
-    neighbors = comparer.getNearestNeighbors(scores, 250)
+    neighbors = comparer.getNearestNeighbors(scores, 500)
 
     # get hero profiles for nearest neighbors
     for neighbor in neighbors:
@@ -119,7 +118,6 @@ if __name__ == '__main__':
             nearestPlayerProfiles[neighbor] = playerProfiles[neighbor]
 
     agg_player = comparer.average(nearestPlayerProfiles)
-    #print agg_player
     unplayed_heroes = comparer.returnUnplayedHeroes(userProfile, agg_player)
 
     # print top unplayed heroes
