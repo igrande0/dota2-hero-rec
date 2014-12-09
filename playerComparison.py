@@ -16,7 +16,7 @@ class PlayerComparison():
         sumOfSquares = float(0)
         for hero, stats in user_profile.iteritems():
         	norm_user_scores[hero] = stats['success']
-        	sumOfSquares = stats['success']**2
+        	sumOfSquares += stats['success']**2
         for hero, stats in user_profile.iteritems():
         	norm_user_scores[hero] /= sqrt(sumOfSquares)
 
@@ -40,9 +40,11 @@ class PlayerComparison():
     	score_list = []
 
         for user_id, score in scores.iteritems():
-            score_list.append((score, user_id))
+            if score != 1:
+                score_list.append((score, user_id))
 
         score_list.sort(reverse=True)
+        print score_list[:k]
 
         return [item[1] for item in score_list[:k]]
 
@@ -52,12 +54,12 @@ class PlayerComparison():
 
         for user_id, hero_profile in player_profiles.iteritems():
             for hero, stats in hero_profile.iteritems():
-                if stats['matches'] < 2:
-                    break
+                if stats['matches'] < 10:
+                    continue
                 agg_player[hero] = agg_player.get(hero, {})
-                agg_player[hero]['kda'] = stats['kda']
-                agg_player[hero]['success'] = stats['success']
-                agg_player[hero]['win_perc'] = stats['win_perc']
+                agg_player[hero]['kda'] = agg_player[hero].get('kda', 0) + stats['kda']
+                agg_player[hero]['success'] = agg_player[hero].get('success', 0) + stats['success']
+                agg_player[hero]['win_perc'] = agg_player[hero].get('win_perc', 0) + stats['win_perc']
                 hero_total[hero] = hero_total.get(hero, 0) + 1
 
     	for hero in agg_player.keys():
@@ -109,7 +111,7 @@ if __name__ == '__main__':
     comparer = PlayerComparison()
     scores = comparer.cosine(userProfile, playerProfiles)
     # neighbors is a list of user_ids
-    neighbors = comparer.getNearestNeighbors(scores, 500)
+    neighbors = comparer.getNearestNeighbors(scores, 250)
 
     # get hero profiles for nearest neighbors
     for neighbor in neighbors:
@@ -117,6 +119,7 @@ if __name__ == '__main__':
             nearestPlayerProfiles[neighbor] = playerProfiles[neighbor]
 
     agg_player = comparer.average(nearestPlayerProfiles)
+    #print agg_player
     unplayed_heroes = comparer.returnUnplayedHeroes(userProfile, agg_player)
 
     # print top unplayed heroes
@@ -128,6 +131,7 @@ if __name__ == '__main__':
             dictionary = dict()
             dictionary['formatted_name'] = heroesFormattedDict[int(hero_id)]
             dictionary['hero_name'] = heroesDict[int(hero_id)]
+            dictionary['hero_link'] = re.sub(' ', '_', heroesDict[int(hero_id)])
             dictionary['hero_id'] = hero_id
             dictionary['win_perc'] = int(round(stats['win_perc'] * 100, 0))
             dictionary['kda'] = round(stats['kda'], 2)
