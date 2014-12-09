@@ -89,19 +89,19 @@ if __name__ == '__main__':
     heroesFormattedDict = {}
     nearestPlayerProfiles = {}
 
-    for line in open('iggyzizzleProfile.json'):
+    for line in open('assets/profile.json'):
         profile = re.split(r'\t+', line)
         userProfile = json.loads(profile[1])
-    for line in open('crawler/playerProfiles1.json'):
+    for line in open('assets/crawler/playerProfiles1.json'):
         profile = re.split(r'\t+', line)
         profile[0] = profile[0].strip('"')
         playerProfiles[profile[0]] = json.loads(profile[1])
-    for line in open('crawler/playerProfiles2.json'):
+    for line in open('assets/crawler/playerProfiles2.json'):
         profile = re.split(r'\t+', line)
         profile[0] = profile[0].strip('"')
         playerProfiles[profile[0]] = json.loads(profile[1])
     
-    hero_file = open('heroes.json')
+    hero_file = open('assets/heroes.json')
     heroes_list = json.load(hero_file)
     for item in heroes_list['heroes']:
         heroesDict[item['id']] = item['localized_name']
@@ -129,7 +129,7 @@ if __name__ == '__main__':
             dictionary = dict()
             dictionary['formatted_name'] = heroesFormattedDict[int(hero_id)]
             dictionary['hero_name'] = heroesDict[int(hero_id)]
-            dictionary['hero_link'] = re.sub(' ', '_', heroesDict[int(hero_id)])
+            dictionary['hero_link'] = re.sub("'", '', re.sub(' ', '_', heroesDict[int(hero_id)]))
             dictionary['hero_id'] = hero_id
             dictionary['win_perc'] = int(round(stats['win_perc'] * 100, 0))
             dictionary['kda'] = round(stats['kda'], 2)

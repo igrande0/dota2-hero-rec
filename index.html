@@ -1,0 +1,79 @@
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="">
+<!--<![endif]-->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dota 2 Hero Recommender</title>
+<link href="boilerplate.css" rel="stylesheet" type="text/css">
+<link href="/local_folder/assets/css/page_layout.css" rel="stylesheet" type="text/css">
+<!-- 
+To learn more about the conditional comments around the html tags at the top of the file:
+paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/
+
+Do the following if you're using your customized build of modernizr (http://www.modernizr.com/):
+* insert the link to your js here
+* remove the link below to the html5shiv
+* add the "no-js" class to the html tags at the top
+* you can also remove the link to respond.min.js if you included the MQ Polyfill in your modernizr build 
+-->
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<style>
+.loader {
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	z-index: 9999;
+	background: url('assets/imgs/loading.gif') 50% 50% no-repeat rgb(249,249,249);
+}
+body {
+	background-color: gray;	
+}
+</style>
+
+<script src="file:///AMC%20HD/Applications/Adobe%20Dreamweaver%20CC%202014.1/Configuration/BuiltIn/Fluid%20Grid%20Layout/respond.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript">
+$(window).load(function() {
+	$(".loader").fadeOut("slow");
+})
+</script>
+
+</head>
+
+<body>
+<center>
+  <div class="gridContainer clearfix">
+    <div id="form_container">
+      <h1>
+        <div id="div1" class="fluid"><a style="font-size: 125%;">D2REC</a></div><br><img src="assets/imgs/dota2logo.png" alt="Dota 2 Logo" style="width:40px;height:40px">
+      <h3>Hero Recommender</h3>
+      </h1>
+      <img src="assets/imgs/dota2heroesposter.jpg" alt="Main Dota 2 page img" style="width:771px;height:423px"> 
+      <div class="form_description">
+        <b><p>Please enter your Steam account number below.</p></b>
+      </div>
+      <br>
+      <br>
+      <label class="description" for="element_1">Steam Account #</label>
+      <br>
+      <form action="writeToFile.php" method="POST">
+        <input name="field1" type="text" /><br><br>
+        <input type="submit" name="submit" value="Submit">
+      </form>
+      <div class="loader"></div>
+      <br>
+    </div>
+    <br><br>
+    <img src="assets/imgs/steam_logo.jpg" alt="Powered by Steam" style="width:106px;height:50px">
+</center>
+</body>
+</html>

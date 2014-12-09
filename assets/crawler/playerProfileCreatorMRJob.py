@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#usr/bin/env python
 
 """ Create a player profile for every
     given user ID in the input file.
@@ -13,7 +13,15 @@ from math import sqrt
 from time import sleep
 from random import randint
 
-STEAM_KEYS = []
+STEAM_KEYS = ["CCAFC265C13500E30C9E8BC6E04EEE9C",
+              "495726C265823513DE44E1A10C1D061E",
+              "E9C49E6B7C47C4EDC79035934218E485",
+              "16A5E8AE2F16B01E6D10FD205EC44D66",
+              "54821F4A31BFCDA4D1D9339B91378FD1",
+              "70E60BD29BA287460C4DA514D264E384",
+              "90E84D0E6A277AA99A4A73DE03E443DB",
+              "6E43467AE9F14E0037C9102F6B25C3CF",
+              "48344009AA3726BD418876A49E3A3398"]
 
 def success_rating(won, lost):
 # a success rating that considers win/loss ratio along with # of games return
